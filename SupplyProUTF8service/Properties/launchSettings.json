@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "SupplyProUTF8service": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
