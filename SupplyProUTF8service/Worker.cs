@@ -13,17 +13,14 @@ namespace SupplyProUTF8service
         private readonly string ordrstkPath;
         private readonly string conrstkPath;
         private readonly FileSystemWatcher watcher;
-        private bool ReadWriteStreamSuccess;
 
 
         private readonly ILogger<Worker> _logger;
 
         public Worker(ILogger<Worker> logger)
         {
-            //ordrstkPath = @"\\Rep-app\sftp_root\supplypro\ordrstk";
-            //conrstkPath = @"\\Rep-app\sftp_root\supplypro\Conrstk";
-            ordrstkPath = @"C:\Test\ftpuser\ordrstk";
-            //conrstkPath = @"C:\Test\ftpuser\ordrstk";
+            ordrstkPath = @"\\Rep-app\sftp_root\supplypro\ordrstk";
+            conrstkPath = @"\\Rep-app\sftp_root\supplypro\Conrstk";
             _logger = logger;
         }
 
@@ -32,8 +29,8 @@ namespace SupplyProUTF8service
             
             Watch(ordrstkPath, watcher);
             _logger.LogInformation("ordrstk being watched");
-            //Watch(conrstkPath, watcher);
-            //_logger.LogInformation("conrstk being watched");
+            Watch(conrstkPath, watcher);
+            _logger.LogInformation("conrstk being watched");
             return base.StartAsync(cancellationToken);
         }
 
@@ -129,7 +126,7 @@ namespace SupplyProUTF8service
                     }
                     catch (Exception e)
                     {
-                        _logger.LogInformation("Unable to move {fileName} to archive", fileName, e);
+                        _logger.LogError("Unable to move {fileName} to archive", fileName, e);
                         break;
                     }
                 }
@@ -145,7 +142,7 @@ namespace SupplyProUTF8service
                 while (!IsFileLocked(originalPath))
                 {
                     File.Move(path, errorPath);
-                    _logger.LogInformation("{FullPath} file was moved to error", originalPath, e);
+                    _logger.LogError("{FullPath} file was moved to error", originalPath, e);
                     break;
                 }
   
