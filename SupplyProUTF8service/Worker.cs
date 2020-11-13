@@ -12,9 +12,6 @@ namespace SupplyProUTF8service
 
         private readonly string ordrstkPath;
         private readonly string conrstkPath;
-        private readonly FileSystemWatcher watcher;
-
-
         private readonly ILogger<Worker> _logger;
 
         public Worker(ILogger<Worker> logger)
@@ -26,25 +23,24 @@ namespace SupplyProUTF8service
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            
-            Watch(ordrstkPath, watcher);
-            _logger.LogInformation("ordrstk being watched");
-            Watch(conrstkPath, watcher);
-            _logger.LogInformation("conrstk being watched");
+
+            _logger.LogInformation("SupplyProRewrite Service started");
             return base.StartAsync(cancellationToken);
         }
 
 
-        private void Watch(string path, FileSystemWatcher watcher)
+        private FileSystemWatcher Watch(string path)
         {
             //initialize
-            watcher = new FileSystemWatcher();
+            FileSystemWatcher watcher = new FileSystemWatcher
+            {
 
-            //assign paramater path
-            watcher.Path = path;
+                //assign paramater path
+                Path = path,
 
-            //don't watch subdirectories
-            watcher.IncludeSubdirectories = false;
+                //don't watch subdirectories
+                IncludeSubdirectories = false
+            };
 
             //file created event
             watcher.Created += FileSystemWatcher_Created;
@@ -57,6 +53,8 @@ namespace SupplyProUTF8service
 
             // Begin watching.
             watcher.EnableRaisingEvents = true;
+
+            return watcher;
         }
         private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
         {
@@ -73,10 +71,8 @@ namespace SupplyProUTF8service
         {
             try
             {
-                using(FileStream originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                {
-                    originalFileStream.Close();
-                }
+                using FileStream originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                originalFileStream.Close();
             }
             catch (Exception)
             {
@@ -130,7 +126,7 @@ namespace SupplyProUTF8service
                         break;
                     }
                 }
-                
+
 
             }
             catch (Exception e)
@@ -145,18 +141,28 @@ namespace SupplyProUTF8service
                     _logger.LogError("{FullPath} file was moved to error", originalPath, e);
                     break;
                 }
-  
+
             }
             finally
             {
                 destinationFileStream.Close();
                 originalFileStream.Close();
-                
+
             }
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Task.CompletedTask;
+            using (Watch(ordrstkPath))
+            {
+                _logger.LogInformation("ordrstk being watched");
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
+
+            using(Watch(conrstkPath))
+            {
+                _logger.LogInformation("conrstk being watched");
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
         }
     }
 }

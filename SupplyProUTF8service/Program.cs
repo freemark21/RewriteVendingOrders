@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.WindowsServices;
 using Serilog;
 using System;
 
@@ -38,15 +37,9 @@ namespace SupplyProUTF8service
 
         }
 
+
         public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            return Host.CreateDefaultBuilder(args)
-                .UseWindowsService()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<Worker>();
-                })
-                .UseSerilog();
-        }
+            => Host.CreateDefaultBuilder(args).UseWindowsService().ConfigureServices((hostContext, services)
+                => { services.AddHostedService<Worker>(); }).UseSerilog();
     }
 }
