@@ -3,4 +3,4 @@ Vending machines send text files with encoding UTF-16 LE, ERP needs them UTF-8 e
 
 
 # .NET Core Worker Service using Serilog.
-# In progress
+
