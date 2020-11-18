@@ -16,20 +16,18 @@ namespace SupplyProUTF8service
 
         public Worker(ILogger<Worker> logger)
         {
-            ordrstkPath = @"\\Rep-app\sftp_root\supplypro\ordrstk";
-            conrstkPath = @"\\Rep-app\sftp_root\supplypro\Conrstk";
+            ordrstkPath = @"\\REP-APP\sftp_root\supplypro\ordrstk";
+            conrstkPath = @"\\REP-APP\sftp_root\supplypro\Conrstk";
             _logger = logger;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-
-            _logger.LogInformation("SupplyProRewrite Service started");
             return base.StartAsync(cancellationToken);
         }
 
 
-        private FileSystemWatcher Watch(string path)
+        private void Watch(string path)
         {
             //initialize
             FileSystemWatcher watcher = new FileSystemWatcher
@@ -54,7 +52,6 @@ namespace SupplyProUTF8service
             // Begin watching.
             watcher.EnableRaisingEvents = true;
 
-            return watcher;
         }
         private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
         {
@@ -152,16 +149,19 @@ namespace SupplyProUTF8service
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using (Watch(ordrstkPath))
+            try
             {
+                Watch(ordrstkPath);
                 _logger.LogInformation("ordrstk being watched");
-                await Task.Delay(Timeout.Infinite, stoppingToken);
-            }
-
-            using(Watch(conrstkPath))
-            {
+                Watch(conrstkPath);
                 _logger.LogInformation("conrstk being watched");
                 await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
+            catch (Exception e)
+            {
+
+                _logger.LogInformation("{e} service was stopped", e);
+
             }
         }
     }

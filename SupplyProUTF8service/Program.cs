@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.ServiceProcess;
 
 namespace SupplyProUTF8service
 {
@@ -9,7 +10,7 @@ namespace SupplyProUTF8service
     {
         public static void Main(string[] args)
         {
-
+            
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
