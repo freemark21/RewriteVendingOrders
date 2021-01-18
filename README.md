@@ -3,7 +3,9 @@ Vending machines send text files with encoding UTF-16 LE, ERP needs them UTF-8 e
 
 # To Improve
 Move Serilog settings into appsettings.json
+
 Move paths into appsettings.json
+
 Rewrite streams async
 
 
